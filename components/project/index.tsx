@@ -53,77 +53,79 @@ const Projects = () => {
     // }
   }
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Create New Project</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Project Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter project name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter project description"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Provide a detailed description of your project.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="pineconeKey"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Pinecone Key</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter Pinecone key" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="elasticKey"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Elastic Key</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter Elastic key" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {submitError && <p className="text-red-500">{submitError}</p>}
-            <Button type="submit">Create Project</Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col gap-2 space-y-3">
+      <Card>
+        <CardHeader>
+          <CardTitle>Create New Project</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Project Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter project name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter project description"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Provide a detailed description of your project.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="pineconeKey"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Pinecone Key</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter Pinecone key" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="elasticKey"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Elastic Key</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter Elastic key" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {submitError && <p className="text-red-500">{submitError}</p>}
+              <Button type="submit">Create Project</Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 export default Projects
