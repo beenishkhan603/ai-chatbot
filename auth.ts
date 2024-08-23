@@ -4,12 +4,15 @@ import { authConfig } from './auth.config'
 import { z } from 'zod'
 import { getStringFromBuffer } from './lib/utils'
 import { getUser } from './app/login/actions'
+import { createClient } from '@/utils/supabase/server'
 
 export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
       async authorize(credentials) {
+        console.log('credentials', credentials)
+        const supabase = createClient()
         const parsedCredentials = z
           .object({
             email: z.string().email(),
@@ -18,23 +21,23 @@ export const { auth, signIn, signOut } = NextAuth({
           .safeParse(credentials)
 
         if (parsedCredentials.success) {
-          const { email, password } = parsedCredentials.data
-          const user = await getUser(email)
+          const email = credentials?.email as string
+          const password = credentials?.password as string
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+          })
+          console.log(data, error)
+          if (error || !data.user) {
+            return null // Return null if sign-in fails
+          }
 
-          if (!user) return null
-
-          const encoder = new TextEncoder()
-          const saltedPassword = encoder.encode(password + user.salt)
-          const hashedPasswordBuffer = await crypto.subtle.digest(
-            'SHA-256',
-            saltedPassword
-          )
-          const hashedPassword = getStringFromBuffer(hashedPasswordBuffer)
-
-          if (hashedPassword === user.password) {
-            return user
-          } else {
-            return null
+          // Optionally: Fetch additional user data from your database
+          // const user = await getUser(email)
+          console.log(data.user)
+          return {
+            ...data.user
+            // Add additional user properties here if needed
           }
         }
 

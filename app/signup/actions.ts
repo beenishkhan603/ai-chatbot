@@ -6,36 +6,7 @@ import { z } from 'zod'
 import { kv } from '@vercel/kv'
 import { getUser } from '../login/actions'
 import { AuthError } from 'next-auth'
-
-export async function createUser(
-  email: string,
-  hashedPassword: string,
-  salt: string
-) {
-  const existingUser = await getUser(email)
-
-  if (existingUser) {
-    return {
-      type: 'error',
-      resultCode: ResultCode.UserAlreadyExists
-    }
-  } else {
-    const user = {
-      id: crypto.randomUUID(),
-      email,
-      password: hashedPassword,
-      salt
-    }
-
-    await kv.hmset(`user:${email}`, user)
-
-    return {
-      type: 'success',
-      resultCode: ResultCode.UserCreated
-    }
-  }
-}
-
+import { createClient } from '@/utils/supabase/server'
 interface Result {
   type: string
   resultCode: ResultCode
@@ -59,28 +30,39 @@ export async function signup(
     })
 
   if (parsedCredentials.success) {
-    const salt = crypto.randomUUID()
-
-    const encoder = new TextEncoder()
-    const saltedPassword = encoder.encode(password + salt)
-    const hashedPasswordBuffer = await crypto.subtle.digest(
-      'SHA-256',
-      saltedPassword
-    )
-    const hashedPassword = getStringFromBuffer(hashedPasswordBuffer)
+    const supabase = createClient()
 
     try {
-      const result = await createUser(email, hashedPassword, salt)
+      // Create the user in Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email: parsedCredentials.data.email,
+        password: parsedCredentials.data.password
+      })
 
-      if (result.resultCode === ResultCode.UserCreated) {
-        await signIn('credentials', {
-          email,
-          password,
-          redirect: false
-        })
+      if (error) {
+        return {
+          type: 'error',
+          resultCode: ResultCode.UserAlreadyExists // Adjust this based on the specific error
+        }
       }
 
-      return result
+      // Optionally sign in the user immediately after signup
+      const signInResult = await supabase.auth.signInWithPassword({
+        email: parsedCredentials.data.email,
+        password: parsedCredentials.data.password
+      })
+
+      if (signInResult.error) {
+        return {
+          type: 'error',
+          resultCode: ResultCode.InvalidCredentials
+        }
+      }
+
+      return {
+        type: 'success',
+        resultCode: ResultCode.UserCreated
+      }
     } catch (error) {
       if (error instanceof AuthError) {
         switch (error.type) {

@@ -6,6 +6,7 @@ import { AuthError } from 'next-auth'
 import { z } from 'zod'
 import { kv } from '@vercel/kv'
 import { ResultCode } from '@/lib/utils'
+import { createClient } from '@/utils/supabase/server'
 
 export async function getUser(email: string) {
   const user = await kv.hgetall<User>(`user:${email}`)
@@ -22,8 +23,8 @@ export async function authenticate(
   formData: FormData
 ): Promise<Result | undefined> {
   try {
-    const email = formData.get('email')
-    const password = formData.get('password')
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
 
     const parsedCredentials = z
       .object({
@@ -36,11 +37,19 @@ export async function authenticate(
       })
 
     if (parsedCredentials.success) {
-      await signIn('credentials', {
-        email,
-        password,
-        redirect: false
+      const supabase = createClient()
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: parsedCredentials.data.email,
+        password: parsedCredentials.data.password
       })
+
+      if (error) {
+        return {
+          type: 'error',
+          resultCode: ResultCode.InvalidCredentials
+        }
+      }
 
       return {
         type: 'success',
