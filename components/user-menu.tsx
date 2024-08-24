@@ -1,5 +1,4 @@
-import { type Session } from '@/lib/types'
-
+'use client'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -8,11 +7,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { signOut } from '@/auth'
-
 export interface UserMenuProps {
   user: any
-  handleLogout: () => void
 }
 
 function getUserInitials(name: string) {
@@ -20,7 +16,17 @@ function getUserInitials(name: string) {
   return lastName ? `${firstName[0]}${lastName[0]}` : firstName.slice(0, 2)
 }
 
-export function UserMenu({ user, handleLogout }: UserMenuProps) {
+export function UserMenu({ user }: UserMenuProps) {
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    //window.location.reload()
+  }
+
   return (
     <div className="flex items-center justify-between">
       <DropdownMenu>
@@ -37,14 +43,11 @@ export function UserMenu({ user, handleLogout }: UserMenuProps) {
             <div className="text-xs text-zinc-500">{user.email}</div>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <form
-            action={async () => {
-              'use server'
-              await signOut()
-              window.location.reload()
-            }}
-          >
-            <button className=" relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-xs outline-none transition-colors hover:bg-red-500 hover:text-white focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+          <form>
+            <button
+              onClick={() => handleLogout()}
+              className=" relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-xs outline-none transition-colors hover:bg-red-500 hover:text-white focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+            >
               Sign Out
             </button>
           </form>

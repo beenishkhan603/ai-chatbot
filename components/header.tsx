@@ -16,11 +16,7 @@ async function UserOrLogin() {
     data: { user },
     error
   } = await supabase.auth.getUser()
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    window.location.reload() // Reload the page to reflect the logout state
-  }
-
+  console.log('ASdadasd', user)
   return (
     <div className="flex  items-center w-full justify-between">
       <div className="flex items-center space-x-4 justify-start">
@@ -30,7 +26,7 @@ async function UserOrLogin() {
               <ChatHistory userId={user.id} />
             </SidebarMobile>
             <SidebarToggle />
-            <Link href="/project">
+            <Link href="/projects">
               <Button variant="link" className="text-white">
                 Project
               </Button>
@@ -40,7 +36,7 @@ async function UserOrLogin() {
                 API Key
               </Button>
             </Link>
-            <Link href="/chat">
+            <Link href="/">
               <Button variant="link" className="text-white">
                 Chat
               </Button>
@@ -56,7 +52,7 @@ async function UserOrLogin() {
       <div className="justinfy-end">
         {user ? (
           <>
-            <UserMenu user={user} handleLogout={handleLogout} />
+            <UserMenu user={user} />
           </>
         ) : (
           <Button variant="link" asChild className="text-white -ml-2">
