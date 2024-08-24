@@ -11,7 +11,8 @@ import {
 import { signOut } from '@/auth'
 
 export interface UserMenuProps {
-  user: Session['user']
+  user: any
+  handleLogout: () => void
 }
 
 function getUserInitials(name: string) {
@@ -19,7 +20,7 @@ function getUserInitials(name: string) {
   return lastName ? `${firstName[0]}${lastName[0]}` : firstName.slice(0, 2)
 }
 
-export function UserMenu({ user }: UserMenuProps) {
+export function UserMenu({ user, handleLogout }: UserMenuProps) {
   return (
     <div className="flex items-center justify-between">
       <DropdownMenu>
@@ -40,6 +41,7 @@ export function UserMenu({ user }: UserMenuProps) {
             action={async () => {
               'use server'
               await signOut()
+              window.location.reload()
             }}
           >
             <button className=" relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-xs outline-none transition-colors hover:bg-red-500 hover:text-white focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">

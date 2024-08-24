@@ -1,9 +1,10 @@
 import { createClient } from '@/utils/supabase/server'
-import Projects from '@/components/project'
 import { redirect } from 'next/navigation'
+import APIKey from '@/components/apiKey'
 
 export default async function ProjectsPage() {
   const supabase = createClient()
+
   // Get the authenticated user's data securely
   const {
     data: { user },
@@ -14,5 +15,5 @@ export default async function ProjectsPage() {
     redirect('/login')
   }
 
-  return <Projects user={user} />
+  return <APIKey user={user} />
 }

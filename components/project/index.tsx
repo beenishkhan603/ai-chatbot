@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { createClient } from '@/utils/supabase/client'
 import {
   Form,
   FormControl,
@@ -16,44 +17,35 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { ProjectSchema } from '@/utils/validations/zodValidation'
-// import { useAuth } from '@/context/authContext';
 
-const Projects = () => {
-  //   const { session } = useAuth()
+const Projects = ({ user }: { user: any }) => {
   const form = useForm({
     resolver: zodResolver(ProjectSchema)
   })
 
   const [submitError, setSubmitError] = useState('')
-  //   const uuid = session?.user?.id
-  //   const form = useForm({
-  //     resolver: zodResolver(ProjectSchema)
-  //   })
-
+  const uuid = user?.id
   const onSubmit = async (data: any) => {
-    // const { name, description, pineconeKey, elasticKey } = data
-    // const { data: supabaseData, error } = await supabase
-    //   .from('projects')
-    //   .insert([
-    //     {
-    //       name,
-    //       description,
-    //       pinecone_index_name: pineconeKey,
-    //       elastic_index_name: elasticKey,
-    //       user_id: uuid
-    //     }
-    //   ])
-    // if (error) {
-    //   console.error('Error creating project:', error)
-    //   setSubmitError('Error creating project: ' + error.message)
-    // } else {
-    //   console.log('Project created successfully:', supabaseData)
-    //   form.reset()
-    //   setSubmitError('')
-    // }
+    const response = await fetch('/api/projects/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+
+    const result = await response.json()
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Failed to create project')
+    } else {
+      console.log('Project created successfully:')
+      form.reset()
+      setSubmitError('')
+    }
   }
   return (
-    <div className="flex flex-col gap-2 space-y-3">
+    <div className="flex flex-col gap-2 space-y-3 p-6">
       <Card>
         <CardHeader>
           <CardTitle>Create New Project</CardTitle>

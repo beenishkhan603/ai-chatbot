@@ -2,8 +2,6 @@ import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { authConfig } from './auth.config'
 import { z } from 'zod'
-import { getStringFromBuffer } from './lib/utils'
-import { getUser } from './app/login/actions'
 import { createClient } from '@/utils/supabase/server'
 
 export const { auth, signIn, signOut } = NextAuth({
@@ -44,5 +42,9 @@ export const { auth, signIn, signOut } = NextAuth({
         return null
       }
     })
-  ]
+  ],
+
+  pages: {
+    signIn: '/login' // Your custom sign-in page
+  }
 })
