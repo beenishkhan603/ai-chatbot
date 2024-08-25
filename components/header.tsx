@@ -16,7 +16,6 @@ async function UserOrLogin() {
     data: { user },
     error
   } = await supabase.auth.getUser()
-  console.log('ASdadasd', user)
   return (
     <div className="flex  items-center w-full justify-between">
       <div className="flex items-center space-x-4 justify-start">

@@ -17,19 +17,61 @@ import {
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { nanoid } from 'nanoid'
 import { useRouter } from 'next/navigation'
-import axios from 'axios'
+import { toast } from 'sonner'
+
 export function PromptForm({
   input,
-  setInput
+  setInput,
+  selectedProject
 }: {
   input: string
   setInput: (value: string) => void
+  selectedProject: any
 }) {
   const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
   const { submitUserMessage } = useActions()
   const [_, setMessages] = useUIState<typeof AI>()
+  const fetchChatResponse = async () => {
+    try {
+      console.log(
+        'Sending request with project ID:',
+        selectedProject.id,
+        'and input:',
+        input
+      )
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          project_id: selectedProject.id.toString(),
+          text: input
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`)
+      }
+
+      const chatResponse = await response.json()
+      setMessages(currentMessages => [
+        ...currentMessages,
+        {
+          id: nanoid(),
+          display: <BotMessage content={chatResponse?.data?.results} />
+        }
+      ])
+
+      console.log('Chat response:', chatResponse)
+    } catch (error: any) {
+      console.error('Error fetching chat response:', error.message)
+      toast.error(error.message)
+    }
+  }
 
   React.useEffect(() => {
     if (inputRef.current) {
@@ -65,37 +107,7 @@ export function PromptForm({
         // const responseMessage = await submitUserMessage(value)
         // setMessages(currentMessages => [...currentMessages, responseMessage])
         //  console.log('response Message', responseMessage)
-        let data = JSON.stringify({
-          project_id: '2',
-          text: 'who am I?'
-        })
-        let config = {
-          method: 'post',
-          maxBodyLength: Infinity,
-          url: 'http://localhost:8000/query_data',
-          headers: {
-            'access-token':
-              'eyJhbGciOiJIUzI1NiIsImtpZCI6IkdQR3ZRL3p0bE11K25KK1QiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3pxcmhxaGJ5YnZiYnlubXdsZHJ4LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJjMDkzNDg5MC0yOWMzLTQxNTktODRkZC1iNmZjZmRlM2M0ODMiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzI0MjQyMjk3LCJpYXQiOjE3MjQyMzg2OTcsImVtYWlsIjoiYm9uZXRpODUxNEBmdXppdGVhLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiJib25ldGk4NTE0QGZ1eml0ZWEuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInN1YiI6ImMwOTM0ODkwLTI5YzMtNDE1OS04NGRkLWI2ZmNmZGUzYzQ4MyJ9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzI0MjMyOTQ2fV0sInNlc3Npb25faWQiOiJjMDRlNDY2Ny1hYjNiLTQ1MzYtODU2ZS1mY2EwYTI5MGNjZjciLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.vNpdjkS5Nn2bkj--noKX6tvHpmD2EiDS1wZFGpzeJEM',
-            'Content-Type': 'application/json'
-          },
-          data: data
-        }
-
-        axios
-          .request(config)
-          .then(response => {
-            console.log(JSON.stringify(response.data))
-            setMessages(currentMessages => [
-              ...currentMessages,
-              {
-                id: nanoid(), // Generate a unique ID for the message
-                display: <BotMessage content={response.data.results} /> // Display the data (e.g., as preformatted text)
-              }
-            ])
-          })
-          .catch(error => {
-            console.log(error)
-          })
+        fetchChatResponse()
       }}
     >
       <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-background px-8 sm:rounded-md sm:border sm:px-12">

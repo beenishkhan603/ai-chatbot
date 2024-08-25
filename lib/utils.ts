@@ -68,7 +68,8 @@ export enum ResultCode {
   UserAlreadyExists = 'USER_ALREADY_EXISTS',
   UnknownError = 'UNKNOWN_ERROR',
   UserCreated = 'USER_CREATED',
-  UserLoggedIn = 'USER_LOGGED_IN'
+  UserLoggedIn = 'USER_LOGGED_IN',
+  UnexpectedError = 'SOMETHING_WENT_WORNG'
 }
 
 export const getMessageFromCode = (resultCode: string) => {
@@ -85,5 +86,7 @@ export const getMessageFromCode = (resultCode: string) => {
       return 'Something went wrong, please try again!'
     case ResultCode.UserLoggedIn:
       return 'Logged in!'
+    case ResultCode.UnexpectedError:
+      return 'Something went worng. Please try again'
   }
 }
