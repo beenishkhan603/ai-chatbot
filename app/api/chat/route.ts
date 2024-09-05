@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     console.log('body ==>', body)
     // Forward the request to your backend service
     const response = await axios.post(
-      'http://localhost:8000/query_data',
+      `${process.env.BACKEND_URL}/query_data`,
       body,
       {
         headers: {
