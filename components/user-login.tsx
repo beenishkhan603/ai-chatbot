@@ -60,7 +60,7 @@ async function UserOrLogin() {
       <div className="justinfy-end">
         {user ? (
           <>
-            <UserMenu user={user} handleLogout={handleLogout} />
+            <UserMenu user={user} />
           </>
         ) : (
           <Button variant="link" asChild className="text-white -ml-2">
