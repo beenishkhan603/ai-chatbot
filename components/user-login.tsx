@@ -20,10 +20,6 @@ async function UserOrLogin() {
     data: { user },
     error
   } = await supabase.auth.getUser()
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    window.location.reload() // Reload the page to reflect the logout state
-  }
 
   return (
     <div className="flex  items-center w-full justify-between">

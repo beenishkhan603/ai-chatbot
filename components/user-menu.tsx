@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { toast } from 'sonner'
 export interface UserMenuProps {
   user: any
 }
@@ -18,13 +19,25 @@ function getUserInitials(name: string) {
 
 export function UserMenu({ user }: UserMenuProps) {
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+    try {
+      // Call the API route to sign out from Supabase
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (response.ok) {
+        window.location.href = '/login'
+      } else {
+        console.error('Failed to logout from Supabase')
+        toast.error('Failed to logout')
       }
-    })
-    //window.location.reload()
+    } catch (error) {
+      console.error('An error occurred during logout:', error)
+      toast.error('Failed to logout')
+    }
   }
 
   return (
