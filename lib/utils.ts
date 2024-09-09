@@ -69,7 +69,8 @@ export enum ResultCode {
   UnknownError = 'UNKNOWN_ERROR',
   UserCreated = 'USER_CREATED',
   UserLoggedIn = 'USER_LOGGED_IN',
-  UnexpectedError = 'SOMETHING_WENT_WORNG'
+  UnexpectedError = 'SOMETHING_WENT_WORNG',
+  VerifyEmail = 'USER_VERIFICATION'
 }
 
 export const getMessageFromCode = (resultCode: string) => {
@@ -88,5 +89,7 @@ export const getMessageFromCode = (resultCode: string) => {
       return 'Logged in!'
     case ResultCode.UnexpectedError:
       return 'Something went worng. Please try again'
+    case ResultCode.VerifyEmail:
+      return 'We have sent you a verifcation email. Please verify'
   }
 }

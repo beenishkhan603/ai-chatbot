@@ -7,6 +7,7 @@ import { kv } from '@vercel/kv'
 import { getUser } from '../login/actions'
 import { AuthError } from 'next-auth'
 import { createClient } from '@/utils/supabase/server'
+import { toast } from 'sonner'
 interface Result {
   type: string
   resultCode: ResultCode
@@ -44,24 +45,25 @@ export async function signup(
           type: 'error',
           resultCode: ResultCode.UserAlreadyExists // Adjust this based on the specific error
         }
-      }
+      } else {
+        //toast.success('We have sent you a verifcation email. Please verify')
+        // Optionally sign in the user immediately after signup
+        // const signInResult = await supabase.auth.signInWithPassword({
+        //   email: parsedCredentials.data.email,
+        //   password: parsedCredentials.data.password
+        // })
 
-      // Optionally sign in the user immediately after signup
-      const signInResult = await supabase.auth.signInWithPassword({
-        email: parsedCredentials.data.email,
-        password: parsedCredentials.data.password
-      })
+        // if (signInResult.error) {
+        //   return {
+        //     type: 'error',
+        //     resultCode: ResultCode.InvalidCredentials
+        //   }
+        // }
 
-      if (signInResult.error) {
         return {
-          type: 'error',
-          resultCode: ResultCode.InvalidCredentials
+          type: 'success',
+          resultCode: ResultCode.VerifyEmail
         }
-      }
-
-      return {
-        type: 'success',
-        resultCode: ResultCode.UserCreated
       }
     } catch (error) {
       if (error instanceof AuthError) {
