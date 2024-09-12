@@ -1,12 +1,11 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { createClient } from '@/utils/supabase/client'
 import {
   Form,
   FormControl,
@@ -24,7 +23,7 @@ const Projects = ({ user }: { user: any }) => {
   })
 
   const [submitError, setSubmitError] = useState('')
-  const uuid = user?.id
+  const [projects, setProjects] = useState([])
   const onSubmit = async (data: any) => {
     const response = await fetch('/api/projects/add', {
       method: 'POST',
@@ -44,6 +43,27 @@ const Projects = ({ user }: { user: any }) => {
       setSubmitError('')
     }
   }
+  const fetchProjects = async () => {
+    console.log('in fetche')
+    const response = await fetch('/api/projects/fetch', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    const result = await response.json()
+    console.log('result', result)
+    if (!response.ok) {
+      console.error('Error fetching API keys:', result.error)
+    } else {
+      console.log('Fetched API keys:', result.data)
+      setProjects(result.projects)
+    }
+  }
+  useEffect(() => {
+    fetchProjects()
+  }, [])
   return (
     <div className="flex flex-col gap-2 space-y-3 p-6">
       <Card>
@@ -117,6 +137,31 @@ const Projects = ({ user }: { user: any }) => {
           </Form>
         </CardContent>
       </Card>
+
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold">Your Projects</h2>
+        {projects.length > 0 ? (
+          <ul className="mt-4 space-y-4 ">
+            {projects.map((project: any) => (
+              <li
+                key={project?.id}
+                className="flex items-center mb-2 justify-between w-full border border-black-700 p-4 rounded"
+              >
+                <div className="font-semibold">{project?.name}</div>
+                <p>{project?.description}</p>
+                <p className="text-sm text-gray-500">
+                  Pinecone Key: {project.pinecone_index_name}
+                </p>
+                <p className="text-sm text-gray-500">
+                  Elastic Key: {project.elastic_index_name}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No projects found.</p>
+        )}
+      </div>
     </div>
   )
 }
