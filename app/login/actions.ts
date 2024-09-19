@@ -43,7 +43,7 @@ export async function authenticate(
         email: parsedCredentials.data.email,
         password: parsedCredentials.data.password
       })
-
+      console.log(data)
       if (error) {
         return {
           type: 'error',

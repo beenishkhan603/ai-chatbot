@@ -105,7 +105,7 @@ const Projects = ({ user }: { user: any }) => {
                   </FormItem>
                 )}
               />
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="pineconeKey"
                 render={({ field }) => (
@@ -130,7 +130,7 @@ const Projects = ({ user }: { user: any }) => {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
               {submitError && <p className="text-red-500">{submitError}</p>}
               <Button type="submit">Create Project</Button>
             </form>
@@ -149,12 +149,12 @@ const Projects = ({ user }: { user: any }) => {
               >
                 <div className="font-semibold">{project?.name}</div>
                 <p>{project?.description}</p>
-                <p className="text-sm text-gray-500">
+                {/* <p className="text-sm text-gray-500">
                   Pinecone Key: {project.pinecone_index_name}
                 </p>
                 <p className="text-sm text-gray-500">
                   Elastic Key: {project.elastic_index_name}
-                </p>
+                </p> */}
               </li>
             ))}
           </ul>
